@@ -1,0 +1,9 @@
+*.log
+project_env/
+chroma_db/
+.vscode/
+services/
+page-fix-before-change.tsx
+Screenshot 2026-07-10 190620.png
+*.env
+src/config.py

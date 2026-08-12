@@ -1,0 +1,33 @@
+
+.dropdown-menu button{
+    /* background-color: hsl(0, 0%, 80%); */
+    /* color: white; */
+    padding: 10px ;
+    /* border: none;
+    cursor: pointer; */
+}
+
+.dropdown-menu h1{
+    display: block;
+}
+
+.dropdown-menu .menu-content{
+    display: none;
+    position: absolute;
+    background-color: rgb(185, 195, 205);
+    min-width: 50px;
+    z-index: 100;
+    /* box-shadow: 2px 2px  5px white; */
+    
+}
+
+/* .three-dot-btn:hover + .menu-content{
+    display: block;
+} */
+
+.dropdown-menu:hover .menu-content {
+  /* display: block; */
+  display: inline-block;
+  /* overflow: visible; */
+  z-index: 10;
+}
