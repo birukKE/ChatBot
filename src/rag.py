@@ -8,6 +8,7 @@ from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings, HuggingFacePipeline
 import data_base
 import config
+import env_config
 
 # from langchain.prompts import ChatPromptTemplate 
 from langgraph.checkpoint.memory import InMemorySaver  
@@ -67,7 +68,7 @@ class ChatHistory:
         get_string = "Previous summary: " + self.summary + "\n" + "\n".join(formatted_lines)
 
         prompt = PromptTemplate.from_template(config.prompt_summerize)
-        model = ChatGoogleGenerativeAI(model = 'gemini-3.5-flash', api_key = config.api_key, temperature=0.7)
+        model = ChatGoogleGenerativeAI(model = 'gemini-3.5-flash', api_key = env_config.api_key, temperature=0.7)
         chain = prompt | model
         response = chain.invoke({"context": get_string})
         self.summary = response
@@ -83,7 +84,7 @@ class ChatHistory:
 
 class RagChain():
     def __init__(self, db = data_base.VectorDatabase(), model_id = 'gemini-3.5-flash'):
-        self.model = ChatGoogleGenerativeAI(model = model_id, api_key = config.api_key, temperature=0.7)
+        self.model = ChatGoogleGenerativeAI(model = model_id, api_key = env_config.api_key, temperature=0.7)
 
         # self.chat_history = []
         self.chat_object = ChatHistory()
