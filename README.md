@@ -1,6 +1,6 @@
-# See `requirements.txt` in src and the JSON configuration files in frontend for the required dependencies and configuration.
+# See requirements.txt in src and the JSON configuration files in frontend for the required dependencies and configuration.
 
-Medical AI Chatbot
+## Medical AI Chatbot
 A medical question-answering chatbot built with Next.js, React, Python, and Flask.
 The application uses RAG to retrieve relevant medical and academic information, which is provided as context to the Gemini 3.5 Flash model to generate responses based on the retrieved information.
 
@@ -15,3 +15,7 @@ The application consists of a Next.js frontend and a Python Flask backend.
 5. The model generates a response based on the retrieved context.
 6. The question and response are stored in the database so conversations can be
    continued later.
+
+
+<img width="946" height="489" alt="image" src="https://github.com/user-attachments/assets/b3dffefd-7c5b-4d0a-beec-97e745935e07" />
+
