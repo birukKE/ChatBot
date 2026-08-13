@@ -82,6 +82,7 @@ class ChatHistory:
             return history
         return self.chat_history
 
+
 class RagChain():
     def __init__(self, db = data_base.VectorDatabase(), model_id = 'gemini-3.5-flash'):
         self.model = ChatGoogleGenerativeAI(model = model_id, api_key = env_config.api_key, temperature=0.7)
@@ -121,7 +122,6 @@ class RagChain():
         prompt = PromptTemplate.from_template(prompt_def)
         chain = prompt | self.model
         response = chain.invoke({"context": user_query})
-        print(f"\n\n {response.content[0]["text"]}\n\n")
         return response.content[0]["text"]
     
     def the_doc(self, paragraphs):
