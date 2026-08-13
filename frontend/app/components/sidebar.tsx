@@ -1,8 +1,3 @@
-
-// import  { useState, useEffect, use } from "react";
-
-// import Image from "next/image";
-// import Link from "next/link";
 import '../page.css'
 import { use, useState } from 'react'
 import deleteButton from "../resources/delete-button.png";
@@ -39,14 +34,9 @@ const SideBar = ({startNewChat, hasDeletedChat, chatRoomButtons, buttonTitle, se
 
     
     const getHistory = (session_id: any, index: any) =>{
-        console.log("in getHistory")
         setTextMessage([])
         set_current_session_id(buttonTitle[index])
         set_current_session_counter(session_id)
-        
-        // console.log("In get history current_session_id = ", current_session_id, "   |   current_session_counter", current_session_counter)
-        console.log("In get history current_session_id = ", buttonTitle[index], "   |   current_session_counter", session_id)
-        console.log("in getHistory before fetch")
         fetch('http://localhost:5000/get_history',{
         method: 'POST',
         headers:  {"Content-Type": "application/json"},
@@ -77,7 +67,6 @@ const SideBar = ({startNewChat, hasDeletedChat, chatRoomButtons, buttonTitle, se
                         <div className="sidebar-buttons-container" key = {index}>
                             
                             <button className={currChatRoomTracker[index]? "history_button selected":"history_button"} onClick={() => {
-                                console.log("yes you succesfully pressed me: ", session_id)
                                 getHistory(session_id, index) 
                                 currChatRoomTracker[index] = true
                                 setCurrChatRoomTracker((prev) => {
@@ -86,7 +75,6 @@ const SideBar = ({startNewChat, hasDeletedChat, chatRoomButtons, buttonTitle, se
                                     return next
                                 }
                                 )
-                                console.log("session_id ", session_id)}} key = {index}> {buttonTitle[index]}
                             </button>
 
                             <button className="delete-button" onClick={() =>
