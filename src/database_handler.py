@@ -22,11 +22,11 @@ def create_conn():
             autocommit=True
         )
         if conn.is_connected():
-            print("\nYes connected lol\n")
+            print("Succesfully connected!")
         else:
-            print("unfortunately, not connected")
+            print("Failed to connect!")
     except mysql.connector.Error as err:
-        print(f"Error: {err}")
+        print(f"Connection Error: {err}")
 
     return conn
 
@@ -65,11 +65,9 @@ def add_a_new_chat_entry(user_query, response, session_id, session_counter, is_n
     conn = create_conn()
     cursor = conn.cursor()
     cursor.execute("SELECT MAX(session_counter) FROM chats")
-    # print("In add_a_new_chat_entry 1: session_name = ", session_id)
     session_count = cursor.fetchall()
  
     if session_count[0][0] == None or is_new_chat:
-        print("where we in if \n\n\n")
         session_num = 0
         session_name = create_random_title()
         if session_count[0][0] != None:
