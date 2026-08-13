@@ -34,7 +34,6 @@ class VectorDatabase():
         # Meaning if the query didnt lead to any matches
         if documents == None:
             return
-        print("Getting data from pubmed!")
         for k, v in documents.items():
             self.create_db(k, v)
             
@@ -64,14 +63,3 @@ def load_a_doc(filepath, filename, filetype):
     text_documents = text_splitter.create_documents(texts=[read_text], metadatas=[{"title": filename}])
     
     return text_documents
-
-# vd = VectorDatabase()
-# example_path = '../sample_data/Demographic_Attributes_Prediction_from_Speech.pdf'
-# example_dir = '../sample_data'
-# filetype = 'pdf'
-# load_all_docs(example_dir, filetype=filetype, vd_object=vd)
-# load_a_doc(example_path, "Demographic_Attributes_Prediction_from_Speech.pdf", 'pdf')
-
-
-# res = re.split('.pdf', example_path)
-# print(f"resutl {res[0]}")
