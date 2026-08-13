@@ -1,4 +1,4 @@
-See `requirements.txt` in src and the JSON configuration files in frontend for the required dependencies and configuration.
+# See `requirements.txt` in src and the JSON configuration files in frontend for the required dependencies and configuration.
 
 Medical AI Chatbot
 A medical question-answering chatbot built with Next.js, React, Python, and Flask.
