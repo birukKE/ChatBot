@@ -17,5 +17,4 @@ The application consists of a Next.js frontend and a Python Flask backend.
    continued later.
 
 
-<img width="946" height="489" alt="image" src="https://github.com/user-attachments/assets/b3dffefd-7c5b-4d0a-beec-97e745935e07" />
 
