@@ -13,23 +13,22 @@ def create_random_title():
 def create_conn():
     try:
         conn = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            password = "mysql",
-            database = "chat_history",
+            host = os.getenv("MYSQL_HOST"),
+            user = os.getenv("MYSQL_USER"),
+            password = os.getenv("MYSQL_PASSWORD"),
+            database = os.getenv("chat_history"),
             # buffered=True,
             ssl_disabled=True,
             autocommit=True
         )
         if conn.is_connected():
-            print("Succesfully connected!")
+            print("\nYes connected lol\n")
         else:
-            print("Failed to connect!")
+            print("unfortunately, not connected")
     except mysql.connector.Error as err:
-        print(f"Connection Error: {err}")
+        print(f"Error: {err}")
 
     return conn
-
 conn = create_conn()
 cursor = conn.cursor()
 
