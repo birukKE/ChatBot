@@ -22,9 +22,9 @@ def create_conn():
             autocommit=True
         )
         if conn.is_connected():
-            print("\nYes connected lol\n")
+            print("Connected!")
         else:
-            print("unfortunately, not connected")
+            print("Couldn't connect:(")
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
