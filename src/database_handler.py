@@ -16,7 +16,7 @@ def create_conn():
             host = os.getenv("MYSQL_HOST"),
             user = os.getenv("MYSQL_USER"),
             password = os.getenv("MYSQL_PASSWORD"),
-            database = os.getenv("chat_history"),
+            database = "chat_history",
             # buffered=True,
             ssl_disabled=True,
             autocommit=True
