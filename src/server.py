@@ -5,10 +5,6 @@ import database_handler
 from data_base import VectorDatabase
 app = Flask(__name__)
 
-isRecived = False
-user_query = ""
-ai_response = ""
-
 CORS(app)
 rc = RagChain()
 vector_db = VectorDatabase()
@@ -60,8 +56,8 @@ def get_history():
     history_lst = []
     try:
         history_lst = database_handler.get_old_chat(session_id=session_id)
-    except:
-        print("Error during database search.")
+    except Exception as e:
+        print("Error during database search. More information: ", e)
     return jsonify(history_lst)
     
 
