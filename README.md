@@ -15,7 +15,7 @@ The application consists of a Next.js frontend and a Python Flask backend.
 5. The model generates a response based on the retrieved context.
 6. The question and response are stored in the database so conversations can be
    continued later.
-
-* Work in progress
+   
+### Work in progress
 
 
