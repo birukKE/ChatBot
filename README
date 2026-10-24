@@ -1,54 +1,17 @@
+See `requirements.txt` in src and the JSON configuration files in frontend for the required dependencies and configuration.
 
-To create virtual environment
-python -m venv project_env
-
-To activate
-project_env\Scripts\Activate.ps1
-not
-project_env\Scripts\activate.bat
+Medical AI Chatbot
+A medical question-answering chatbot built with Next.js, React, Python, and Flask.
+The application uses RAG to retrieve relevant medical and academic information, which is provided as context to the Gemini 3.5 Flash model to generate responses based on the retrieved information.
 
 
+The application consists of a Next.js frontend and a Python Flask backend.
 
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-
-
-mysql -u root -p
-
-
-
-
-
-
-Plan:
-When user opens home page, they will either get to just send a message, in which case a new session id will be created. If they pick something from their history then I will take that session id and get the messages and continue.
-
-React:
-When user writes something in clean chat, create new session ID and store the chats.
-If user presses history 1 then get the session id and then get all the data. Then send it to 
-python backend for the AI to summerize those. Then start normal chat.
-
-
-
-MySQL code: mysql
-
-
-pip install mysql-connector-python
-
-
-2026-07-29: Where I stopped
-
-I am facing error inserting a new session id. So now that the first entry has been created whenever I try to start a new chat i get error at inserting the chat into the database.
-
-
-
-Not to myself:
-If I'm having problem with new chat creation look at database_hanlder.py and uncomment session_id and num
-
-
-echo "# ChatBot" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin git@github.com:birukKE/ChatBot.git
-git push -u origin main
+1. The user submits a question through the web interface.
+2. The Flask backend receives the question.
+3. Relevant medical/academic documents are retrieved and stored/searchable using a
+   vector database.
+4. The retrieved information is provided as context to a Gemini language model.
+5. The model generates a response based on the retrieved context.
+6. The question and response are stored in the database so conversations can be
+   continued later.
