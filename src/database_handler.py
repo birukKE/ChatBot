@@ -1,128 +1,118 @@
+
+
 import mysql.connector
 from rag import RagChain
 import random
 import string
 import config
-rag = RagChain()
-
-# just a function during development to create titles
-def create_random_title():
-    return str("".join(random.choices(string.ascii_letters, k=7)))
-    
-
-def create_conn():
-    try:
-        conn = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            password = "mysql",
-            database = "chat_history",
-            # buffered=True,
-            ssl_disabled=True,
-            autocommit=True
-        )
-        if conn.is_connected():
-            print("\nYes connected lol\n")
-        else:
-            print("unfortunately, not connected")
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
-
-    return conn
-
-conn = create_conn()
-cursor = conn.cursor()
+import os
+from dotenv import load_dotenv
+from contextlib import contextmanager
 
 
-def get_old_chat(session_id):
-    conn = create_conn()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT * FROM Chats WHERE session_counter = %s", (session_id[0], ))
-    except Exception as e:
-        print("Error: ", e)
-    returned_data = cursor.fetchall()
-    chat_messages = []
-    for i in range(len(returned_data)):
-        chat_messages.extend([{'messenger': "human", "message": returned_data[i][1]},
-                              {'messenger': "ai", "message": returned_data[i][2]}
-                              ])
-    conn.close()
-    return chat_messages
+load_dotenv()
 
-def get_all_session_ids():
-    global cursor
-    cursor.execute("SELECT DISTINCT session_id FROM Chats")
-    session_id = cursor.fetchall()
+class ChatDatabase:
+    def __init__(self):
+        self.config = {
+            "host": os.getenv("HOST"),
+            "user": os.getenv("USER"),
+            "password": os.getenv("PASSWORD"),
+            "database":  "chat_history",
+            "ssl_disabled": True,
+            "autocommit": True
+            }
 
-    cursor.execute("SELECT DISTINCT session_counter FROM Chats")
-    session_counter = cursor.fetchall()
-
-    result = {'session_id': session_id, 'session_counter': session_counter}
-    return result
-
-def add_a_new_chat_entry(user_query, response, session_id, session_counter, is_new_chat):
-    conn = create_conn()
-    cursor = conn.cursor()
-    cursor.execute("SELECT MAX(session_counter) FROM chats")
-    # print("In add_a_new_chat_entry 1: session_name = ", session_id)
-    session_count = cursor.fetchall()
- 
-    if session_count[0][0] == None or is_new_chat:
-        print("where we in if \n\n\n")
-        session_num = 0
-        session_name = create_random_title()
-        if session_count[0][0] != None:
-            session_num = session_count[0][0] + 1
-            # session_name = create_random_title()
-            session_name = rag.query_database(user_query, config.promp_create_title)
-        cursor.execute("INSERT INTO Chats(human, assistant, session_id, session_counter, title) VALUES (%s, %s, %s, %s, %s)", (user_query, response, session_name, session_num, "title lol"))
-        conn.commit()
-        return {"current_session_counter": session_num, "current_session_id": session_name}
-    
-    if isinstance(session_counter, list):
-        session_counter = session_counter[0]
-        session_id = session_id[0]
-    cursor.execute("INSERT INTO Chats(human, assistant, session_id, session_counter, title) VALUES (%s, %s, %s, %s, %s)", (user_query, response, session_id, session_counter, "title there"))
-    conn.commit()
-    conn.close()
-    return None
-
-def clear_all_chats():
-    conn = create_conn()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM chats")
-    conn.commit()
-    conn.close()
-
-def delete_a_chat(chat_session_id):
-    conn = create_conn()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM chats WHERE session_counter = (%s)", (chat_session_id[0], ))
-    conn.commit()
-    conn.close()
+    @contextmanager
+    def connect_to_db(self):
+        try: 
+            conn = mysql.connector.connect(**self.config)
+            if conn.is_connected(): 
+                print("Conneted to Database")
+                yield conn
+            else: print("Couldn't connect to Database.")
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+        finally:
+            conn.close()
 
     
-if __name__ == '__main__':
+    def get_old_chat(self, session_id):
+        query = "SELECT * FROM Chats WHERE session_counter = %s"
+        with self.connect_to_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (session_id[0], ))
+            returned_data = cursor.fetchall()
+            chat_messages = []
+            for i in range(len(returned_data)):
+                chat_messages.extend([{'messenger': "human", 
+                                    "message": returned_data[i][1]},
+                                    {'messenger': "ai", 
+                                    "message": returned_data[i][2]}
+                                    ])
+        return chat_messages
 
-    cursor = conn.cursor()
-    count = 0
-    while True:
-        user_query = input("Your query: ")
-        # response = rag.query_gemini(query=user_query)
-        response = "LOL haha" + str(count)
-        print(f"Bot: {response}")
-        # cursor.execute("INSERT INTO Chats(human, assistant, session) VALUES (%s,%s,%s)", (user_query, response, "chat1"))
-        cursor.execute("INSERT INTO Chats(human, assistant, session_id) VALUES (%s, %s, %s)", (user_query, response, "chat2"))
-        # val = cursor.execute("SELECT * FROM Chats WHERE session_id = %s", ("chat1",))
-        # conn.commit()
-        cursor.execute("SELECT * FROM Chats WHERE session_id = %s", ("chat2",))
-        val = cursor.fetchall()
-        # conn.commit()
-        print("Table\n", val)
-        chat_messages = []
+    def clear_all_chats(self):
+        with self.connect_to_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM chats")
+            conn.commit()
 
-        for i in range(len(val)):
-            chat_messages.extend([val[i][1], val[i][2]])
-        print(chat_messages)
-        count += 1
+
+    def delete_a_chat(self, chat_session_id):
+        query = "DELETE FROM chats WHERE session_counter = (%s)"
+        with self.connect_to_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (chat_session_id[0],))
+            conn.commit()
+
+
+    def get_all_session_ids(self):
+        with self.connect_to_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT DISTINCT session_id FROM Chats")
+            session_id = cursor.fetchall()
+
+            cursor.execute("SELECT DISTINCT session_counter FROM Chats")
+            session_counter = cursor.fetchall()
+
+            result = {'session_id': session_id, 'session_counter': session_counter}
+            return result
+
+    def add_a_new_chat_entry(self, 
+                            user_query, 
+                            response, 
+                            session_id, 
+                            session_counter, 
+                            is_new_chat):
+    
+        with self.connect_to_db() as conn:
+            rag = RagChain()
+            cursor = conn.cursor()
+            cursor.execute("SELECT MAX(session_counter) FROM chats")
+            last_session_ctr = cursor.fetchall()
+            # If this session is a new chat
+            if last_session_ctr[0][0] == None or is_new_chat:
+                curr_session_ctr = 0
+                curr_session_name = ""
+                if last_session_ctr[0][0] != None:
+                    curr_session_ctr = last_session_ctr[0][0] + 1
+                    curr_session_name = rag.query_database(user_query, config.promp_create_title)
+                query1 = """INSERT INTO Chats(human, assistant, session_id, session_counter, title) 
+                            VALUES (%s, %s, %s, %s, %s)"""
+                cursor.execute(query1, 
+                                (user_query, response, curr_session_name, curr_session_ctr, "random title debugg"))
+                conn.commit()
+                return {"current_session_counter": curr_session_ctr, 
+                        "current_session_id": curr_session_name}
+            
+            if isinstance(session_counter, list):
+                session_counter = session_counter[0]
+                session_id = session_id[0]
+                query2 = """INSERT INTO Chats(human, assistant, session_id, session_counter, title) 
+                            VALUES (%s, %s, %s, %s, %s)"""
+                cursor.execute(query2, (user_query, response, session_id, session_counter, "title there"))
+                conn.commit()
+        return None
+
+        
